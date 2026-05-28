@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.library.modules.borrow.mapper.BorrowRecordMapper">
+
+    <select id="selectBorrowRecordPage" resultType="com.library.vo.BorrowRecordVO">
+        SELECT
+            br.id,
+            br.reader_id AS readerId,
+            r.reader_no AS readerNo,
+            r.name AS readerName,
+            br.book_id AS bookId,
+            b.book_code AS bookCode,
+            b.title AS bookTitle,
+            b.author AS author,
+            br.borrow_date AS borrowDate,
+            br.due_date AS dueDate,
+            br.return_date AS returnDate,
+            br.overdue_days AS overdueDays,
+            br.renew_count AS renewCount,
+            br.status,
+            CASE
+                WHEN br.status = 0 AND br.due_date &lt; CURDATE() THEN TRUE
+                ELSE FALSE
+            END AS overdue,
+            br.create_time AS createTime
+        FROM library_borrow_record br
+        LEFT JOIN library_reader r ON br.reader_id = r.id
+        LEFT JOIN library_book b ON br.book_id = b.id
+        <where>
+            <if test="query.readerId != null">
+                AND br.reader_id = #{query.readerId}
+            </if>
+            <if test="query.bookId != null">
+                AND br.book_id = #{query.bookId}
+            </if>
+            <if test="query.status != null">
+                AND br.status = #{query.status}
+            </if>
+            <if test="query.overdueOnly != null and query.overdueOnly">
+                AND br.status = 0
+                AND br.due_date &lt; CURDATE()
+                AND br.return_date IS NULL
+            </if>
+        </where>
+        ORDER BY br.id DESC
+    </select>
+
+</mapper>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.library.modules.fine.mapper.FineMapper">
+
+    <select id="selectFinePage" resultType="com.library.vo.FineVO">
+        SELECT
+            f.id,
+            f.borrow_record_id AS borrowRecordId,
+            f.reader_id AS readerId,
+            r.reader_no AS readerNo,
+            r.name AS readerName,
+            br.book_id AS bookId,
+            b.book_code AS bookCode,
+            b.title AS bookTitle,
+            b.author AS author,
+            br.borrow_date AS borrowDate,
+            br.due_date AS dueDate,
+            br.return_date AS returnDate,
+            f.amount,
+            f.reason,
+            f.status,
+            f.pay_type AS payType,
+            f.pay_time AS payTime,
+            f.create_time AS createTime
+        FROM library_fine f
+        LEFT JOIN library_reader r ON f.reader_id = r.id
+        LEFT JOIN library_borrow_record br ON f.borrow_record_id = br.id
+        LEFT JOIN library_book b ON br.book_id = b.id
+        <where>
+            <if test="query.readerId != null">
+                AND f.reader_id = #{query.readerId}
+            </if>
+            <if test="query.status != null">
+                AND f.status = #{query.status}
+            </if>
+        </where>
+        ORDER BY f.id DESC
+    </select>
+
+</mapper>

@@ -1,0 +1,17 @@
+.DS_Store
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Java / Maven
+target/
+*.log
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Environment files
+.env
+.env.*
